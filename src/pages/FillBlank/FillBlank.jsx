@@ -84,6 +84,10 @@ const FillBlankForm = (props) => {
       }
     }
   }, []);
+  const [selectedOption, setSelectedOption] = useState(""); // State variable to track selected option
+  const handleDropdownChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   const handleEditQuestionParam = (param, value) => {
     setParameters((prevState) => ({ ...prevState, [param]: value }));
@@ -208,16 +212,23 @@ const FillBlankForm = (props) => {
     </div>
     <QuestionNameHeader>Smart Interactive object</QuestionNameHeader>
   </div>
+  <select value={selectedOption} onChange={handleDropdownChange}>
+        <option value="">Select an option</option>
+        <option value="fillTheBlank">Fill the Blank</option>
+        {/* Add more options as needed */}
+      </select>
   <div className={styles["image-box"]}>
     <img src="/assets/question-bg-2.jpg" alt="question background" />
   </div>
         </>
       )}
-          <List
-        sx={{ width: "60%", bgcolor: "background.paper" }}
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-      >
+      
+      {selectedOption === "fillTheBlank" && (
+        <List
+          sx={{ width: "60%", bgcolor: "background.paper" }}
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+        >
         {questions.map((question, idx) => (
           <Box key={question.id} sx={{ mb: 2 }}>
             <Stack direction="row" spacing={2}>
@@ -265,7 +276,9 @@ const FillBlankForm = (props) => {
             </Collapse>
           </Box>
         ))}
+        
       </List>
+        )}
       <Button   //*deited
         size="large"
         sx={{ fontWeight: "bold" }}
