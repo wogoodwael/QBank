@@ -127,6 +127,9 @@ const EditQuestion = () => {
     } else if (values.question_type === "fill-in-the-blank") {
       navigate("/add-question/filltheblanks/manual");
     }
+     else if (values.question_type === "SI") {
+      navigate("/SI-page");
+    }
   };
 
   console.log("watch= ", watch());

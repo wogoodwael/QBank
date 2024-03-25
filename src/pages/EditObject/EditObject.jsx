@@ -97,6 +97,8 @@ const EditObject = () => {
       navigate(`/dragthewords/${id}`);
     }else if (type === "FillTheBlank") {
       navigate(`/edit_fill/${id}`);
+    }else if(type==="SI"){
+      navigate(`/edit_SI/${id}`);
     }
   };
 

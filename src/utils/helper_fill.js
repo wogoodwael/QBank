@@ -2,15 +2,15 @@ import { v4 as uuidv4 } from "uuid";
 
 const constructFillTheBlankParametersFromKeyValuePairs = (keyValuePairs) => {
   return {
-    title: keyValuePairs.find((item) => item?.parameter === "question")?.text,
+    title: keyValuePairs.find((item) => item?.parameter === "_question_")?.text,
     options: keyValuePairs
-      .filter((item) => item.parameter === "option")
+      .filter((item) => item.parameter === "answers")
       .map((item) => ({
         id: uuidv4(),
-        title: item.text,
-        correct: false,
-        tip: "",
-        showTip: false,
+        _option_: item.text,
+     
+        _tip_: "",
+       
       })),
   };
 };

@@ -6,7 +6,7 @@ const wait = (ms) => {
 
 const convertPdfToImages = async () => {
   await wait(4000);
-  return ["/assets/fill_one.jpeg", "/assets/fill_one.jpeg"];
+  return ["/assets/Fill in the blank.jpg", "/assets/Fill in the blank.jpg"];
 };
 
 export { convertPdfToImages };

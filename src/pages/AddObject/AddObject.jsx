@@ -66,7 +66,7 @@ const AddObject = () => {
     } else if (values.questionType === "essay-question") {
       navigate("/add-question/essay-question/manual");
     }else if (type === "SI") {
-      navigate("/add-question/filltheblanks/manual");}
+      navigate("/SI-page");}
   };
 
   const onSubmitOcr = async (values) => {
@@ -83,8 +83,9 @@ const AddObject = () => {
   const saveObject = async (data) => {
     const res = await axios.post("/interactive-objects", {
       ...data,
-      isAnswered: "g", // g, y , r
+      isAnswered: "r", // g, y , r
       parameters: {},
+      
     });
     toast.success("Question created successfully!");
     return res.data;

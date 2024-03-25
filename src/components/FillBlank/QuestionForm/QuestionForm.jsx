@@ -42,27 +42,11 @@ const styleSheet = {
     alignItems: 'flex-start', // Align items to the top
   },
 };
-const generateOption = () => {
-  const id = uuidv4();
-  return {
-    id: uuidv4(),
-    text: `Option ${id}`.slice(0, 9),
-    correct: false,
-  };
-};
-
-const generateQuestion = () => {
-  return {
-    id: uuidv4(),
-    title: "Question title",
-    options: [generateOption()],
-  };
-};
 
 
 const QuestionForm = (props) => {
   const { question, handleEditQuestionParam } = props;
-  const [questions, setQuestions] = React.useState([generateQuestion()]);
+
 
   const handleAddOption = () => {
     const newAnswers = question.answers
@@ -70,19 +54,17 @@ const QuestionForm = (props) => {
           ...question?.answers,
           {
             id: uuidv4(),
-            title: "",
-            correct: false,
-            tip: "",
-            showTip: false,
+            _option_:"",
+            _tip_: "",
+         
           },
         ]
       : [
           {
             id: uuidv4(),
-            title: "",
-            correct: false,
-            tip: "",
-            showTip: false,
+            _option_:"",
+            _tip_: "",
+          
           },
         ];
 
@@ -92,13 +74,13 @@ const QuestionForm = (props) => {
   
 
   const handleUpdateOption = (optionId, value, isCorrect, tip) => {
-    const newAnswers = question.answers.map((answer) => {
+    const newAnswers = question?.answers?.map((answer) => {
       if (answer.id === optionId) {
         return {
           ...answer,
-          text: value,
+          _option_: value,
           correct: isCorrect,
-          tip: tip,
+          _tip_: tip,
         };
       }
       return answer;
@@ -113,19 +95,25 @@ const QuestionForm = (props) => {
     );
     handleEditQuestionParam("answers", newAnswers);
   };
-
+  const [show, setShow] = useState(false);
   const onClickTip = (optionId) => {
-    const newOptions = question.options.map((option) => {
-      if (option.id === optionId) {
-        return {
-          ...option,
-          showTip: !option.showTip,
-        };
-      }
-      return option;
-    });
-    handleEditQuestionParam("options", newOptions);
+    setShow(!show)
+    if (question && question?.answers) {
+      
+      const newAnswers = question?.answers?.map((answer) => {
+        if (answer.id === optionId) {
+          return {
+            ...answer,
+            
+          };
+         
+        }
+        return answer;
+      });
+      handleEditQuestionParam("answers", newAnswers);
+    }
   };
+
   const handleShowObject = async () => {
     try {
       const {data} = await axios.get(
@@ -143,14 +131,14 @@ const QuestionForm = (props) => {
     <div className={styles.formContainerLeftHalf}>
     <div className={styles.form}>
       <TextField
-        label="Question"
+        label="_Question_"
         variant="outlined"
-        name="title"
+        name="_question_"
         sx={styleSheet.objectName}
-        value={question?.questions || question.title}
+        value={question?._question_ }
         onChange={(e) => handleEditQuestionParam(e.target.name, e.target.value)}
       />
-      <h4>Correct Answer: </h4>
+      <h4>_Answer_: </h4>
       <ul className={styles.options}>
         {question?.answers?.map((answer, idx) => (
           <li key={idx} className={styles?.option}>
@@ -159,12 +147,12 @@ const QuestionForm = (props) => {
                 <div>
                   <div>
                     <TextField
-                      label={`correct answer ${idx + 1}`}
+                      label={`_Answer ${idx + 1}_`}
                       variant="outlined"
                       sx={styleSheet.option}
-                      value={answer?.text}
+                      value={answer?._option_}
                       onChange={(e) =>
-                        handleUpdateOption(answer.id, e.target.value, answer.correct, answer.tip)
+                        handleUpdateOption(answer.id, e.target.value, answer.correct, answer._tip_)
                       }
                     ></TextField>
                     <button type="button" onClick={() => onClickTip(answer?.id)}>
@@ -173,13 +161,13 @@ const QuestionForm = (props) => {
                     <div
                       className={styles.popover}
                       style={{
-                        display: answer.showTip ? "block" : "none",
+                        display: show ? "block" : "none"
                       }}
                     >
                       <Input
-                        value={answer.tip}
+                        value={answer._tip_}
                         onChange={(e) =>
-                          handleUpdateOption(answer.id, answer.text, answer.correct, e.target.value)
+                          handleUpdateOption(answer.id, answer._option_, answer.correct, e.target.value)
                         }
                       />
                     </div>

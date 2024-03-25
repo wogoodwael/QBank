@@ -3,7 +3,7 @@ import  { useState } from 'react';
 import ReactQuill from 'react-quill';
 import '../../App.css';
 import 'react-quill/dist/quill.snow.css';
-import styles from "./fillBlank.module.scss";
+import styles from "./fillSI.module.scss";
 import { Button, CircularProgress } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import QuestionForm from "../../components/FillBlank/QuestionForm/QuestionForm";
@@ -15,6 +15,8 @@ import AddIcon from "@mui/icons-material/Add";
 import QuestionNameHeader from "../../components/QuestionNameHeader/QuestionNameHeader";
 import {
   Box,
+
+
   Collapse,
   IconButton,
   List,
@@ -25,25 +27,24 @@ import {
 import { grey } from "@mui/material/colors";
 import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 const generateFillBlankQuestion = () => {
+  
   return {
-    _question_: "",
-    answers: [
-      { id: uuidv4(), _tip_: "",_option_:"" },
+    title: "",
+    options: [
+      { id: uuidv4(), title: "", correct: false, tip: "", showTip: false },
      
     ],
+    
   };
 };
 
-const FillBlankForm = (props) => {
+const FillSIForm = (props) => {
   const [parameters, setParameters] = React.useState(
     generateFillBlankQuestion
   );
   const [questions, setQuestions] = React.useState([
     generateFillBlankQuestion(),
   ]);
-
-
-  const [json, setJSON] = React.useState("");
   const location = useLocation();
   const params = useParams();
   const [showForm, setShowForm] = React.useState(true);
@@ -52,23 +53,24 @@ const FillBlankForm = (props) => {
   const navigate = useNavigate();
   const [renderFromModal, setRenderFromModal] = React.useState(false);
   const appendIdToAnswers = (parameters) => {
-    const newAnswers = parameters?.answers?.map((ans) => ({
+    const newAnswers = parameters.answers.map((ans) => ({
       ...ans,
       id: uuidv4(),
     }));
     const newParameters = { ...parameters, answers: newAnswers };
     return newParameters;
   };
+  
   const fetchData = async (id) => {
     const res = await axios.get(`/interactive-objects/${id}`);
     console.log(res.data);
     const { parameters } = res.data;
-  
     setParameters(parameters);
     const newParameters = appendIdToAnswers(parameters);
     setParameters(newParameters);
   };
   React.useEffect(() => {
+    getQuestionTypes()
     // Edit
     if (location.pathname.includes("/edit_fill/")) {
       const { id } = params;
@@ -84,7 +86,22 @@ const FillBlankForm = (props) => {
       }
     }
   }, []);
+  const [selectedOption, setSelectedOption] = useState(""); 
+  const [types, setTypes] = React.useState([]);
 
+  const getQuestionTypes = async () => {
+    const res = await axios.get("interactive-object-types");
+    const types = res.data.map((item) => item.typeName);
+    setTypes(types);
+  };// State variable to track selected option
+  const handleDropdownChange = (event) => {
+    setSelectedOption(event.target.value);
+    // openResultInNewTab()
+  };
+  const openResultInNewTab = () => {
+    // Modify this URL to the appropriate result page URL
+    window.open("/add-question/filltheblanks/manual", "_blank");
+  };
 
   const handleEditQuestionParam = (param, value) => {
     setParameters((prevState) => ({ ...prevState, [param]: value }));
@@ -97,35 +114,20 @@ const FillBlankForm = (props) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    const containsOption = parameters.answers.some(answer => answer._option_);
 
-    
-    
     console.log(state);
-    console.log('lenght', parameters.length)
     const data = {
       ...state,
-      isAnswered: containsOption ? "g" : "r",
-
+      isAnswered: "g",
       parameters,
     };
     console.log(data);
-    console.log("typee", data.questionName)
-    // const answerText = parameters.answers[0].text;
-
-    const h5pString = {
-  
-      questions: `<p>${parameters._question_} * ${parameters.answers?.[0]?._option_ ?? ""}${parameters.answers?.[1] ? '/' + parameters.answers?.[1]?._option_ : ""}:${parameters.answers?.[0]?._tip_ ?? ""}*</p>`
-    };
     try {
       setLoading(true);
       if (location.pathname.includes("/edit_fill/")) {
         const { id } = params;
         await axios.patch(`/interactive-objects/${id}`, {
           ...data,
-          h5pString
-
         });
         toast.success("Question updated successfully!");
         setTimeout(() => {
@@ -134,10 +136,8 @@ const FillBlankForm = (props) => {
       } else {
         await axios.post("/interactive-objects", {
           ...state,
-          questionName:data.questionName,
-          isAnswered:containsOption ? "g" : "r",
+          isAnswered: "g", // g, y , r
           parameters,
-          h5pString
         });
         if (props.onSubmit) {
           props.onSubmit();
@@ -182,35 +182,68 @@ const FillBlankForm = (props) => {
       alignItems: 'flex-start', // Align items to the top
     },
   };
- 
-
-
+  const MyQuillEditor = () => {
+    const [editorHtml, setEditorHtml] = useState('');
+  
+    const handleChange = (html) => {
+      setEditorHtml(html);
+    };
+   
+  const module={
+  
+  
+  }
+    return (
+      
+      <div className="quill-editor-container"> {/* Add a custom class */}
+      <ReactQuill
+        modules={module}
+        theme="snow" // specify theme ('snow' or 'bubble')
+        value={editorHtml}
+        onChange={handleChange}
+      />
+      <div className="button-container">
+            <button className="save-button">Save</button>
+            <button className="cancel-button">Cancel</button>
+            </div>
+    </div>
+    );
+  };
+  
   return showForm ? (
     <form className="container" onSubmit={handleSubmit}>
       {!renderFromModal && (
         <>
+         <select value={selectedOption} onChange={handleDropdownChange}>
+              <option value="">Select an option</option>
+              {types.map((type, idx) => (
+                  <option key={idx} value={type}>
+                    {type}
+                  </option>
+                ))}
+            </select>
     <div className="header-container">
     <div className="" style={styleSheet.form}>
       <div className={styles.contentContainer}>
-        <header className="app-header-fill"> {/* Add header */}
+        <header className="app-header"> {/* Add header */}
           <h1>Fill in the blank</h1> {/* Add the header text */}
         </header>
         <div className={styles.verticalSpace} /> {/* Add vertical space */}
-     
+        <MyQuillEditor /> {/* Integrate the MyQuillEditor component */}
       </div>{/* Integrate the MyQuillEditor component */}
     </div>
-   
+    <QuestionNameHeader>Smart Interactive object</QuestionNameHeader>
   </div>
-
-  <div className={styles["image"]}>
+ 
+  <div className={styles["image-box"]}>
     <img src="/assets/question-bg-2.jpg" alt="question background" />
   </div>
         </>
       )}
       
-      
+      {selectedOption === "FillTheBlank" && (
         <List
-          sx={{ width: "105%", bgcolor: "background.paper" }}
+          sx={{ width: "60%", bgcolor: "background.paper" }}
           component="nav"
           aria-labelledby="nested-list-subheader"
         >
@@ -225,6 +258,7 @@ const FillBlankForm = (props) => {
                     : { backgroundColor: grey[200] }
                 }
               >
+            
                 <ListItemText primary={`Question ${idx + 1}`} />
                 {question.open ? <ExpandLess /> : <ExpandMore />}
               </ListItemButton>
@@ -263,15 +297,7 @@ const FillBlankForm = (props) => {
         ))}
         
       </List>
-      <button
-          type="button"
-          onClick={() => {
-            setJSON(parameters);
-          }}
-        >
-          Show JSON
-        </button>
-        <p>{JSON.stringify(parameters)}</p>
+        )}
       <Button   //*deited
         size="large"
         sx={{ fontWeight: "bold" }}
@@ -311,4 +337,4 @@ const FillBlankForm = (props) => {
   );
 };
 
-export default FillBlankForm;
+export default FillSIForm;

@@ -12,7 +12,8 @@ import { useStore } from "../../store/store";
 import parameters from "../../constants/parameters.json";
 
 import styles from "./scanAndUpload.module.scss";
-
+import DescriptionIcon from "@mui/icons-material/Description";
+import CollectionsIcon from "@mui/icons-material/Collections";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -61,6 +62,11 @@ const ScanAndUpload = () => {
     setImages(images);
     console.log(images);
   };
+  const onChangeImages = async (event) => {
+    const files = event.target.files;
+    const urls = [...files].map((file) => URL.createObjectURL(file));
+    setImages(urls);
+  };
 
   if (loading) {
     return (
@@ -77,19 +83,34 @@ const ScanAndUpload = () => {
       {!!images.length ? (
         <StudioFill images={images} />
       ) : (
-        <div>
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<CloudUploadIcon />}
-            onChange={onChange}
-          >
-            Upload file
-            <VisuallyHiddenInput type="file" accept="application/pdf" />
-          </Button>
-        </div>
-      )}
-    </div>
+        <div className={styles["upload-buttons"]}>
+        <Button
+          component="label"
+          variant="outlined"
+          startIcon={<DescriptionIcon />}
+          onChange={onChange}
+          color="warning"
+        >
+          Upload PDF
+          <VisuallyHiddenInput type="file" accept="application/pdf" />
+        </Button>
+        <Button
+          component="label"
+          variant="outlined"
+          startIcon={<CollectionsIcon />}
+          onChange={onChangeImages}
+          color="success"
+        >
+          Upload images
+          <VisuallyHiddenInput
+            type="file"
+            accept="image/png, image/jpeg"
+            multiple
+          />
+        </Button>
+      </div>
+    )}
+  </div>
   );
 };
 

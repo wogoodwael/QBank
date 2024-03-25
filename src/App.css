@@ -17,7 +17,21 @@
   font-weight: bold;
   padding: 1rem 0;
   margin-bottom: 1rem;
+  margin-top: 10px;
   width: 220%;
+  height: 80px; /* Set width to 50% */
+  display: inline-block;
+}
+.app-header-fill{
+  background-color: #0594a9;
+  color: #fff;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  width: 400%;
   height: 80px; /* Set width to 50% */
   display: inline-block;
 }
@@ -31,7 +45,7 @@
  margin-top: 1rem;
   right: 0;
   width: 550px; /* Adjust the width as needed */
-  height: 700px; /* Adjust the height as needed */
+  height: 50vh; 
   padding: 20px; /* Adjust padding as needed */
 }
 .app-header h1 {
@@ -64,7 +78,15 @@
 .cancel-button {
   margin-left: auto; /* Push the button to the right */
 }
+select {
+  margin-bottom: 20px; /* Add margin to create space from elements below */
 
+  background-color: #0594a9;
+  color: black; /* Text color */
+ /* Background color */
+  border: 1px solid white; /* Border color */
+  padding: 5px; 
+}
 
 .save-button:hover,
 .cancel-button:hover {

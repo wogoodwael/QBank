@@ -20,6 +20,7 @@ import Home from "./pages/Home/Home";
 import AddObject from "./pages/AddObject/AddObject";
 import TrueFalseForm from "./pages/TrueFalseForm/TrueFalseForm";
 import FillBlank from "./pages/FillBlank/FillBlank";
+import FillSIForm from "./pages/FillSI/FillSI";
 import EditQuestion from "./pages/EditQuestion/EditQuestion";
 import DragTheWords from "./pages/DragTheWords/DragTheWords";
 import EditObject from "./pages/EditObject/EditObject";
@@ -64,7 +65,9 @@ function App() {
               Component={TrueFalseForm}
             />
            <Route path="/add-question/filltheblanks/manual" Component={FillBlank} />
+           <Route path="/SI-page" Component={FillSIForm} />
            <Route path="/edit_fill/:id" Component={FillBlank} /> 
+           <Route path="/edit_SI/:id" Component={FillSIForm} /> 
             <Route
               path="/add-question/essay-question/manual"
               Component={EssayQuestion}

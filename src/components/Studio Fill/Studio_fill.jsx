@@ -76,11 +76,14 @@ const StudioFill = (props) => {
     newParameters[idx] = value;
     setParameters(newParameters);
     const newBoxColors = [...boxColors];
-    if (value === "question") {
+    if (value === "_Question_") {
       // newBoxColors[idx] = "red";
       newBoxColors[idx] = "#800080";
-    } else if (value === "correctanswer") {
+    } else if (value === "_Answer_") {
       newBoxColors[idx] = "#FFA500";
+    }
+     else if (value === "_Tip_") {
+      newBoxColors[idx] = "#ffd200";
     }
     setBoxColors(newBoxColors);
 
@@ -117,18 +120,39 @@ const StudioFill = (props) => {
     setOpenModal(true);
     // navigate("/add-question/multiple-choice/manual");
   };
-
+  const saveObject = async () => {
+    const data = { ...state };
+   
+    const question = extractedTextList[0].text;
+    const answer = extractedTextList[1]?.text;
+    const Tip=extractedTextList[2]?.parameter==="_Tip_"?extractedTextList[2]?.text:extractedTextList[3]?.text;
+    console.log("qqqqqqqq", question)
+    console.log("aaaaaaa", answer)
+    const h5pString = {
+      questions: `<p>${question}*${answer}${extractedTextList[2]?.parameter==="_Answer_" ? '/' + extractedTextList[2]?.text : ""}:${Tip}*</p>`
+    };
+    const res = await axios.post("/interactive-objects", {
+      ...data,
+      isAnswered: !parameters.answers || parameters.answers.length === 0 ? "r" : "g",
+      parameters: {},
+      h5pString
+    });
+    toast.success("Question created successfully!");
+    return res.data;
+  };
   const onClickSubmit = async () => {
     console.log("extractedTextList= ", extractedTextList);
     console.log("state= ", state);
-
+    const id = await saveObject();
     const objectElements = extractedTextList.map((item) => ({
       [item.parameter]: item.text,
     }));
 
-    const res = await axios.post(`saveObject${state.type}/${state.id}`, {
+    const res = await axios.post(`saveObject${state.type}/${id}`, {
       objectElements,
+    
     });
+
 
     toast.success("Question parameters updated successfully!");
   };
@@ -182,7 +206,7 @@ const StudioFill = (props) => {
 
     try {
       const result = await Tesseract.recognize(dataUrl, "eng");
-      let text = result.data.text;
+      let text = result.data.text.trim("\n");
       setExtractedTextList((prevState) => [
         ...prevState,
         { id: uuidv4(), text, parameter, y },

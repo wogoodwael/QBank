@@ -125,9 +125,13 @@ const Studio = (props) => {
     const objectElements = extractedTextList.map((item) => ({
       [item.parameter]: item.text,
     }));
+    const h5pString=extractedTextList.map((item)=>({
+      "questions":item.text
+    }))
 
     const res = await axios.post(`saveObject${state.type}/${state.id}`, {
       objectElements,
+      h5pString
     });
 
     toast.success("Question parameters updated successfully!");
